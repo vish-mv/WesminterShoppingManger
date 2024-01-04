@@ -44,7 +44,7 @@ public class ShoppingGUI extends JFrame {
         String details = "Product ID: " + product.getProductId() + "\n" +
                 "Product Name: " + product.getProductName() + "\n" +
                 "Available Items: " + product.getAvailableItems() + "\n" +
-                "Price: " + product.getPrice();
+                "Price: " + product.getPrice() +product;
         productDetailsTextArea.setText(details);
     }
 
@@ -59,7 +59,7 @@ public class ShoppingGUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Product type dropdown
-        String[] productTypes = {"all", "Electronics", "Clothes"};
+        String[] productTypes = {"All", "Electronics", "Clothes"};
         productTypeComboBox = new JComboBox<>(productTypes);
         productTypeComboBox.addActionListener(new ActionListener() {
             @Override
@@ -139,7 +139,7 @@ public class ShoppingGUI extends JFrame {
         model.addColumn("Price");
 
         for (Product product : productList) {
-            if (productType.equals("all") || (productType.equals("Electronics") && product instanceof Electronics)
+            if (productType.equals("All") || (productType.equals("Electronics") && product instanceof Electronics)
                     || (productType.equals("Clothes") && product instanceof Clothing)) {
                 Object[] rowData = {product.getProductId(), product.getProductName(),
                         product.getAvailableItems(), product.getPrice()};

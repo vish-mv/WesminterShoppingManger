@@ -54,28 +54,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
         System.out.println("6. Open GUI");
         System.out.print("Select an option: ");
     }
-/*
-    @Override
-    public void addProductToCart(Product product, ShoppingCart cart) {
-        cart.addProduct(product);
-    }
 
-    @Override
-    public void removeProductFromCart(Product product, ShoppingCart cart) {
-        cart.removeProduct(product);
-    }
-
-    @Override
-    public void viewCart(ShoppingCart cart) {
-        // Implement logic to display the contents of the cart
-    }
-
-    @Override
-    public void checkout(ShoppingCart cart) {
-        // Implement logic to complete the checkout process
-    }
-
- */
 
     public void addProduct(Product product) {
         if (productList.size() < MAX_PRODUCTS) {
@@ -86,7 +65,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
         }
     }
 
-    private void deleteProduct(String productId) {
+    public void deleteProduct(String productId) {
         for (Iterator<Product> iterator = productList.iterator(); iterator.hasNext(); ) {
             Product product = iterator.next();
             if (product.getProductId().equals(productId)) {
@@ -98,7 +77,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
         System.out.println("Total products left in the system: " + productList.size());
     }
 
-    private void printProductList() {
+    public void printProductList() {
         // Sort the product list alphabetically by product ID
         Collections.sort(productList, Comparator.comparing(Product::getProductId));
 
@@ -112,7 +91,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
     }
 
     private void saveProductsToFile() {
-        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("products.dat"))) {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("products.txt"))) {
             outputStream.writeObject(productList);
             System.out.println("Products saved to file successfully.");
         } catch (IOException e) {
@@ -123,16 +102,20 @@ public class WestminsterShoppingManager implements ShoppingManager {
 
     @SuppressWarnings("unchecked")
     public void loadProductsFromFile() {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("products.dat"))) {
-            productList = (ArrayList<Product>) ois.readObject();
-            System.out.println("Products loaded from file: " + productList.size());
+        List<Product> loadedProducts = new ArrayList<>();
+
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream("products.txt"))) {
+            loadedProducts = (List<Product>) objectInputStream.readObject();
+            System.out.println("Products loaded from file: " + loadedProducts.size());
         } catch (FileNotFoundException e) {
             System.out.println("No previous data found. Starting with an empty product list.");
-            productList = new ArrayList<>();
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Error loading products from file.");
             e.printStackTrace();
         }
+
+        productList = new ArrayList<>(loadedProducts); // Assign the loaded products to the main list
+
     }
 
     public static void main(String[] args) {
@@ -182,8 +165,6 @@ public class WestminsterShoppingManager implements ShoppingManager {
     }
 
     private Product createProduct(Scanner scanner) {
-        System.out.println("Enter product type (Electronics or Clothing): ");
-        String productType = scanner.nextLine();
 
         System.out.println("Enter product ID: ");
         String productId = scanner.nextLine();
@@ -198,7 +179,10 @@ public class WestminsterShoppingManager implements ShoppingManager {
         double price = scanner.nextDouble();
         scanner.nextLine(); // Consume the newline character
 
-        if ("Electronics".equalsIgnoreCase(productType)) {
+        System.out.println("Enter product type (Electronics(E) or Clothing(C)): ");
+        String productType = scanner.nextLine();
+
+        if ("Electronics".equalsIgnoreCase(productType)||"E".equalsIgnoreCase(productType)) {
             System.out.println("Enter brand: ");
             String brand = scanner.nextLine();
 
@@ -206,7 +190,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
             int warrantyPeriod = scanner.nextInt();
 
             return new Electronics(productId, productName, availableItems, price, brand, warrantyPeriod);
-        } else if ("Clothing".equalsIgnoreCase(productType)) {
+        } else if ("Clothing".equalsIgnoreCase(productType)||"C".equalsIgnoreCase(productType)) {
             System.out.println("Enter size: ");
             String size = scanner.nextLine();
 
