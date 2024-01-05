@@ -14,14 +14,24 @@ public class WestminsterShoppingManager implements ShoppingManager {
     private static final int MAX_PRODUCTS = 50;
     private List<Product> productList;
     private List<Product> shoppingCartList;
+    private List<Manager> managers;
+
 
 
     public WestminsterShoppingManager() {
         this.productList = new ArrayList<>();
-        loadProductsFromFile(); // Load products from file when the application starts
         this.shoppingCartList = new ArrayList<>();  // Ensure proper initialization
-    }
+        this.managers = new ArrayList<>();
+        loadManagersFromFile();
+        loadProductsFromFile(); // Load products from file when the application starts
 
+    }
+    public List<Product> getProductList() {
+        return productList;
+    }
+    public List<Product> getShoppingCartList() {
+        return shoppingCartList;
+    }
 
     public void openGUI() {
         loadProductsFromFile(); // Ensure products are loaded before opening the GUI
@@ -37,12 +47,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
             }
         });
     }
-    public List<Product> getProductList() {
-        return productList;
-    }
-    public List<Product> getShoppingCartList() {
-        return shoppingCartList;
-    }
+
 
     @Override
     public void displayMenu() {
@@ -52,6 +57,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
         System.out.println("4. Save products to file");
         System.out.println("5. Exit");
         System.out.println("6. Open GUI");
+        System.out.println("6. Register Another Manager");
         System.out.print("Select an option: ");
     }
 
@@ -62,6 +68,45 @@ public class WestminsterShoppingManager implements ShoppingManager {
             System.out.println("Product added successfully.");
         } else {
             System.out.println("Maximum number of products reached. Cannot add more products.");
+        }
+    }
+    private Product createProduct(Scanner scanner) {
+
+        System.out.println("Enter product ID: ");
+        String productId = scanner.nextLine();
+
+        System.out.println("Enter product name: ");
+        String productName = scanner.nextLine();
+
+        System.out.println("Enter number of available items: ");
+        int availableItems = scanner.nextInt();
+
+        System.out.println("Enter price: ");
+        double price = scanner.nextDouble();
+        scanner.nextLine(); // Consume the newline character
+
+        System.out.println("Enter product type (Electronics(E) or Clothing(C)): ");
+        String productType = scanner.nextLine();
+
+        if ("Electronics".equalsIgnoreCase(productType)||"E".equalsIgnoreCase(productType)) {
+            System.out.println("Enter brand: ");
+            String brand = scanner.nextLine();
+
+            System.out.println("Enter warranty period: ");
+            int warrantyPeriod = scanner.nextInt();
+
+            return new Electronics(productId, productName, availableItems, price, brand, warrantyPeriod);
+        } else if ("Clothing".equalsIgnoreCase(productType)||"C".equalsIgnoreCase(productType)) {
+            System.out.println("Enter size: ");
+            String size = scanner.nextLine();
+
+            System.out.println("Enter color: ");
+            String color = scanner.nextLine();
+
+            return new Clothing(productId, productName, availableItems, price, size, color);
+        } else {
+            System.out.println("Invalid product type. Product not added.");
+            return null;
         }
     }
 
@@ -118,10 +163,118 @@ public class WestminsterShoppingManager implements ShoppingManager {
 
     }
 
+    //Manager Section
+
+    private void loadManagersFromFile() {
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream("managers.dat"))) {
+            managers = (List<Manager>) objectInputStream.readObject();
+            System.out.println("Managers loaded from file: " + managers.size());
+        } catch (FileNotFoundException e) {
+            System.out.println("No previous manager data found. \nYou can Log In Using Default Account!.\n");
+            addDefaultManager();
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error loading managers from file.\nYou can Log In Using Default Account!.\n");
+            addDefaultManager();
+
+        }
+    }
+    private void addDefaultManager(){
+        Manager manager = new Manager("admin123","admin123");
+        managers.add(manager);
+        System.out.println("\nYou can Log In default Backup manager Account!\n");
+    }
+    private void removeDefaultManager(){
+        for (Iterator<Manager> iterator = managers.iterator(); iterator.hasNext(); ) {
+            Manager manager = iterator.next();
+            if (manager.getUsername().equals("admin123")) {
+                iterator.remove();
+                break;
+            }
+        }
+    }
+
+    private void saveManagersToFile() {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("managers.dat"))) {
+            outputStream.writeObject(managers);
+            System.out.println("Managers saved to file successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Error saving managers to file.");
+        }
+    }
+
+    public void addManager(Manager manager) {
+        managers.add(manager);
+        saveManagersToFile();
+    }
+
+    private void registerNewManager(Scanner scanner) {
+        while(true) {
+            System.out.println("Enter username for the new manager: ");
+            String newUsername = scanner.nextLine();
+            System.out.println("Enter password for the new manager: ");
+            String newPassword = scanner.nextLine();
+
+            Manager newManager = new Manager(newUsername, newPassword);
+
+            if (usernameExists(newUsername) || newUsername.equals("admin123")) {
+                System.out.println("Username already exists. Please choose a different one.");
+                System.out.println("Press X to go back to menu \nOr Any key to try again: ");
+                String quit_choice= scanner.nextLine();
+                if (quit_choice.equalsIgnoreCase("X")){
+                    break;
+                }
+                else {
+                    continue;
+                }
+            } else {
+                managers.add(newManager);
+                saveManagersToFile();
+                System.out.println("Registration successful for the new manager.");
+            }
+        }
+    }
+    private boolean usernameExists(String username) {
+        for (Manager manager : managers) {
+            if (manager.getUsername().equals(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public Manager authenticate(String username, String password) {
+        for (Manager manager : managers) {
+            if (manager.getUsername().equals(username) && manager.getPassword().equals(password)) {
+                return manager;
+            }
+        }
+        return null; // Return null if not found
+    }
+
+
+
     public static void main(String[] args) {
         WestminsterShoppingManager shoppingManager = new WestminsterShoppingManager();
         Scanner scanner = new Scanner(System.in);
+        boolean authenticated = false;
+        Manager loggedInManager = null;
 
+        do {
+            System.out.print("Enter username: ");
+            String username = scanner.nextLine();
+            System.out.print("Enter password: ");
+            String password = scanner.nextLine();
+
+            loggedInManager = shoppingManager.authenticate(username, password);
+
+            if (loggedInManager == null) {
+                System.out.println("Invalid username or password. Please try again.");
+            } else {
+                System.out.println("Login successful. Welcome, " + loggedInManager.getUsername() + "!");
+                authenticated = true;
+            }
+        } while (!authenticated);
+        shoppingManager.removeDefaultManager();
         int choice;
         do {
             shoppingManager.displayMenu();
@@ -154,6 +307,10 @@ public class WestminsterShoppingManager implements ShoppingManager {
                     // Open GUI
                     shoppingManager.openGUI();
                     break;
+                case 7:
+                    // Register a new manager (added this option)
+                    shoppingManager.registerNewManager(scanner);
+                    break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }
@@ -164,43 +321,5 @@ public class WestminsterShoppingManager implements ShoppingManager {
         scanner.close();
     }
 
-    private Product createProduct(Scanner scanner) {
 
-        System.out.println("Enter product ID: ");
-        String productId = scanner.nextLine();
-
-        System.out.println("Enter product name: ");
-        String productName = scanner.nextLine();
-
-        System.out.println("Enter number of available items: ");
-        int availableItems = scanner.nextInt();
-
-        System.out.println("Enter price: ");
-        double price = scanner.nextDouble();
-        scanner.nextLine(); // Consume the newline character
-
-        System.out.println("Enter product type (Electronics(E) or Clothing(C)): ");
-        String productType = scanner.nextLine();
-
-        if ("Electronics".equalsIgnoreCase(productType)||"E".equalsIgnoreCase(productType)) {
-            System.out.println("Enter brand: ");
-            String brand = scanner.nextLine();
-
-            System.out.println("Enter warranty period: ");
-            int warrantyPeriod = scanner.nextInt();
-
-            return new Electronics(productId, productName, availableItems, price, brand, warrantyPeriod);
-        } else if ("Clothing".equalsIgnoreCase(productType)||"C".equalsIgnoreCase(productType)) {
-            System.out.println("Enter size: ");
-            String size = scanner.nextLine();
-
-            System.out.println("Enter color: ");
-            String color = scanner.nextLine();
-
-            return new Clothing(productId, productName, availableItems, price, size, color);
-        } else {
-            System.out.println("Invalid product type. Product not added.");
-            return null;
-        }
-    }
 }
