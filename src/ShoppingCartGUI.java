@@ -51,6 +51,7 @@ public class ShoppingCartGUI extends JFrame {
 
     private void populateCartDetails() {
         DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("Product ID");
         model.addColumn("Product");
         model.addColumn("Quantity");
         model.addColumn("Price");
@@ -59,12 +60,37 @@ public class ShoppingCartGUI extends JFrame {
 
         for (Product product : shoppingCart) {
             double price = product.getPrice();
+            String productID = product.getProductId();
+            int row_number=0;
 
-            Object[] rowData = {getProductDetails(product), 1, price};  // Fixed quantity of 1
-            model.addRow(rowData);
+            // Check if the product with the current product ID is already in the table
+            boolean productExistsInTable = false;
+            for (int row = 0; row < model.getRowCount(); row++) {
+                String tableProductID = (String) model.getValueAt(row, 0);  // Assuming column 0 is for Product ID
+                if (tableProductID.equals(productID)) {
+                    // Product with the same ID is already in the table, update the quantity
+                    int currentQuantity = (int) model.getValueAt(row, 2);
+                    model.setValueAt(currentQuantity + 1, row, 2);  // Increment the quantity
+                    model.setValueAt((currentQuantity + 1)*price, row, 3);
+                    productExistsInTable = true;
+                    row_number=row;
+                    break;
+                }
+            }
 
-            products_price += price;
+            if (!productExistsInTable) {
+                // Product with the current product ID is not in the table, add a new row
+                Object[] rowData = {productID, getProductDetails(product), 1, price};  // Fixed quantity of 1
+                model.addRow(rowData);
+            }
+
+
         }
+        for(int i=0; i<model.getRowCount();i++){
+            System.out.println((double) model.getValueAt(i, 3));
+            products_price+= (double) model.getValueAt(i, 3);
+        }
+
 
         // Apply discount if applicable
         double discount=applyDiscount(products_price);

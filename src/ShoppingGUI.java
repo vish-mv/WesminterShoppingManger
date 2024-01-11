@@ -18,6 +18,8 @@
         private JTextArea productDetailsTextArea;
         private JButton addToCartButton;
         private JButton viewShoppingCartButton;
+        private JButton loginButton;
+        private JButton registerButton;
         private JScrollPane tableScrollPane;
 
         public ShoppingGUI(List<Product> productList, List<Product>  shoppingCartList) {
@@ -124,12 +126,16 @@
                     openShoppingCartGUI();
                 }
             });
+            loginButton = new JButton("Login");
+            registerButton = new JButton("Register");
 
             // Layout setup
             JPanel controlPanel = new JPanel();
             controlPanel.add(new JLabel("Select Product Type:"));
             controlPanel.add(productTypeComboBox);
             controlPanel.add(viewShoppingCartButton);
+            controlPanel.add(loginButton);
+            controlPanel.add(registerButton);
 
             JPanel productDetailsPanel = new JPanel();
             productDetailsPanel.setLayout(new BoxLayout(productDetailsPanel, BoxLayout.Y_AXIS));
