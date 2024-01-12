@@ -10,7 +10,8 @@
 
     public class ShoppingGUI extends JFrame {
         private List<Product> productList; // Assuming productList is populated somewhere
-        private List<Product> shoppingCartList =new ArrayList<>(); // Assuming shoppingCart is populated somewhere
+        private List<Product> shoppingCartList; // Assuming shoppingCart is populated somewhere
+        private List<User> userList;
 
 
         private JComboBox<String> productTypeComboBox;
@@ -22,9 +23,10 @@
         private JButton registerButton;
         private JScrollPane tableScrollPane;
 
-        public ShoppingGUI(List<Product> productList, List<Product>  shoppingCartList) {
+        public ShoppingGUI(List<Product> productList, List<Product>  shoppingCartList, List<User> userList) {
             this.productList = productList;
             this.shoppingCartList = shoppingCartList;
+            this.userList=userList;
             initializeGUI();
             populateTable("All"); // Display all products initially
             productTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -185,6 +187,53 @@
                 return "";  // Add handling for other product types if needed
             }
         }
+        private void showLoginRegisterOptionBox() {
+            String[] options = {"Login", "Register"};
+            int choice = JOptionPane.showOptionDialog(
+                    this,
+                    "To proceed, please login or register.",
+                    "Login/Register",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    options,
+                    options[0]);
+
+            // Process the user's choice
+            switch (choice) {
+                case 0: // Login
+                    openLoginGUI();
+                    break;
+                case 1: // Register
+                    openRegisterGUI();
+                    break;
+                default:
+                    break;
+            }
+        }
+        private void openLoginGUI() {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    new LoginGUI(userList).setVisible(true);
+                }
+            });
+        }
+        public void updateLoginButton(User user) {
+            loginButton.setText(user.getUsername());
+            loginButton.setEnabled(false); // Disable the button after login
+            registerButton.setVisible(false); // Hide the register button
+        }
+
+
+        private void openRegisterGUI() {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    new RegisterGUI(userList).setVisible(true);
+                }
+            });
+        }
 
         private void openShoppingCartGUI() {
             SwingUtilities.invokeLater(new Runnable() {
@@ -203,7 +252,7 @@
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    ShoppingGUI shoppingGUI = new ShoppingGUI(manager.getProductList(), manager.getShoppingCartList());
+                    ShoppingGUI shoppingGUI = new ShoppingGUI(manager.getProductList(), manager.getShoppingCartList(),manager.getUserList());
                     shoppingGUI.setVisible(true);
                 }
             });

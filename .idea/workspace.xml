@@ -4,10 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8966f9f6-c790-497c-93f8-16dd27e2789b" name="Changes" comment="Re-design the info part in GUI">
+    <list default="true" id="8966f9f6-c790-497c-93f8-16dd27e2789b" name="Changes" comment="bugs Fixed In GUI&#10;Add same product to same row with quantity update &#10;Total Values Bug fixed">
+      <change afterPath="$PROJECT_DIR$/src/LoginGUI.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/RegisterGUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ShoppingCartGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ShoppingCartGUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ShoppingGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ShoppingGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/WestminsterShoppingManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/WestminsterShoppingManager.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -105,8 +108,27 @@
       <option name="project" value="LOCAL" />
       <updated>1704916044303</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="bugs Fixed In GUI&#10;Add same product to same row with quantity update &#10;Total Values Bug fixed">
+      <option name="closed" value="true" />
+      <created>1705009159441</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1705009159441</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Add all the classes and Created all the working elements" />
@@ -114,7 +136,8 @@
     <MESSAGE value="Re-design the interface Class" />
     <MESSAGE value="Added manager Class And security features&#10;Category discount bug fixed" />
     <MESSAGE value="Re-design the info part in GUI" />
-    <option name="LAST_COMMIT_MESSAGE" value="Re-design the info part in GUI" />
+    <MESSAGE value="bugs Fixed In GUI&#10;Add same product to same row with quantity update &#10;Total Values Bug fixed" />
+    <option name="LAST_COMMIT_MESSAGE" value="bugs Fixed In GUI&#10;Add same product to same row with quantity update &#10;Total Values Bug fixed" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/w1954048_cw1$ShoppingCartGUI.ic" NAME="ShoppingCartGUI Coverage Results" MODIFIED="1703337433427" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />

@@ -15,13 +15,14 @@ public class WestminsterShoppingManager implements ShoppingManager {
     private List<Product> productList;
     private List<Product> shoppingCartList;
     private List<Manager> managers;
-
-
+    private List<User> userList;
 
     public WestminsterShoppingManager() {
         this.productList = new ArrayList<>();
         this.shoppingCartList = new ArrayList<>();  // Ensure proper initialization
         this.managers = new ArrayList<>();
+        this.userList = new ArrayList<>();
+
         loadManagersFromFile();
         loadProductsFromFile(); // Load products from file when the application starts
 
@@ -31,6 +32,9 @@ public class WestminsterShoppingManager implements ShoppingManager {
     }
     public List<Product> getShoppingCartList() {
         return shoppingCartList;
+    }
+    public List<User> getUserList() {
+        return userList;
     }
 
     public void openGUI() {
@@ -42,7 +46,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
                 WestminsterShoppingManager shoppingManager = new WestminsterShoppingManager();
                 shoppingManager.loadProductsFromFile(); // Load products from file when the application starts
 
-                ShoppingGUI shoppingGUI = new ShoppingGUI(shoppingManager.getProductList(), shoppingManager.getShoppingCartList());
+                ShoppingGUI shoppingGUI = new ShoppingGUI(shoppingManager.getProductList(), shoppingManager.getShoppingCartList(),shoppingManager.getUserList());
                 shoppingGUI.setVisible(true);
             }
         });
@@ -250,6 +254,15 @@ public class WestminsterShoppingManager implements ShoppingManager {
         }
         return null; // Return null if not found
     }
+    public User authenticateUser(String username, String password){
+        for (User user: userList){
+            if(user.getUsername().equals(username) && user.getPassword().equals(password)){
+                return user;
+            }
+        }
+        return null;
+    }
+
 
 
 
