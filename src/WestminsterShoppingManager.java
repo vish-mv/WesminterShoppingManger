@@ -25,6 +25,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
 
         loadManagersFromFile();
         loadProductsFromFile(); // Load products from file when the application starts
+        loadUsersFromFile();
 
     }
     public List<Product> getProductList() {
@@ -204,6 +205,27 @@ public class WestminsterShoppingManager implements ShoppingManager {
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Error saving managers to file.");
+        }
+    }
+    public void saveUsersToFile(List<User> userList) {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("users.dat"))) {
+            outputStream.writeObject(userList);
+            this.userList=userList;
+            System.out.println("Users in the array from file: " + userList.size());
+            System.out.println("Users saved to file successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Error saving Users to file.");
+        }
+    }
+    private void loadUsersFromFile() {
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream("users.dat"))) {
+            userList = (List<User>) objectInputStream.readObject();
+            System.out.println("Users loaded from file: " + userList.size());
+        } catch (FileNotFoundException e) {
+            System.out.println("No previous User data found.");
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error loading users from file.");
         }
     }
 

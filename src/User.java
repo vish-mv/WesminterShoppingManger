@@ -1,7 +1,8 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class User {
+public class User implements Serializable {
     private String username;
     private String password;
     private int purchased_count;
@@ -33,5 +34,11 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+    public String getName(){
+        return name;
+    }
+    public int getPurchased_count(){
+        return purchased_count;
     }
 }

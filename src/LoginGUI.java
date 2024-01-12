@@ -10,15 +10,29 @@ class LoginGUI extends JFrame {
     private JTextField usernameField;
     private JPasswordField passwordField;
 
-    public LoginGUI(List<User> users) {
+    private ShoppingGUI shoppingGUI;
+    private JLabel login;
+    public LoginGUI(ShoppingGUI shoppingGUI, List<User> users) {
+        this.shoppingGUI = shoppingGUI;
         this.users = users;
 
-        setTitle("Login");
-        setSize(400, 200);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(3, 2));
+        setTitle("Login");
+        setSize(500, 200);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setMinimumSize(new Dimension(700, 500));
+
+        // Main panel with BorderLayout
+        JPanel mainPanel = new JPanel(new BorderLayout());
+
+        // Create a panel for the form
+        JPanel formPanel = new JPanel(new GridLayout(3, 2));
+
+        // Center-aligned title label
+        JLabel login = new JLabel("Login", SwingConstants.CENTER);
+        login.setFont(new Font("Arial", Font.BOLD, 24));
+        login.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
 
         JLabel usernameLabel = new JLabel("Username:");
         JLabel passwordLabel = new JLabel("Password:");
@@ -27,7 +41,6 @@ class LoginGUI extends JFrame {
         passwordField = new JPasswordField();
 
         JButton loginButton = new JButton("Login");
-
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -37,14 +50,22 @@ class LoginGUI extends JFrame {
             }
         });
 
+        // Add components to the form panel
+        formPanel.add(usernameLabel);
+        formPanel.add(usernameField);
+        formPanel.add(passwordLabel);
+        formPanel.add(passwordField);
 
-        panel.add(usernameLabel);
-        panel.add(usernameField);
-        panel.add(passwordLabel);
-        panel.add(passwordField);
-        panel.add(loginButton);
 
-        add(panel);
+        // Add the title label to the main panel
+        mainPanel.add(login, BorderLayout.NORTH);
+
+        // Add the form panel to the main panel
+        mainPanel.add(formPanel, BorderLayout.CENTER);
+        mainPanel.add(loginButton,BorderLayout.SOUTH);
+
+        // Add the main panel to the frame
+        add(mainPanel);
     }
     private void authenticateUser(String username, String password) {
         WestminsterShoppingManager shoppingManager = new WestminsterShoppingManager();
@@ -52,10 +73,11 @@ class LoginGUI extends JFrame {
 
         if (loggedUser != null) {
             // Authentication successful
-            JOptionPane.showMessageDialog(LoginGUI.this, "Login Successful. Welcome, " + loggedUser.getUsername());
+            JOptionPane.showMessageDialog(LoginGUI.this, "Login Successful. Welcome, " + loggedUser.getName());
 
             // Update the ShoppingGUI login button
-            ((ShoppingGUI) SwingUtilities.getWindowAncestor(LoginGUI.this)).updateLoginButton(loggedUser);
+
+            shoppingGUI.updateLoginButton(loggedUser);
 
             dispose();
         } else {

@@ -75,10 +75,11 @@ public class RegisterGUI extends JFrame {
     }
 
     private void registerUser(String name,String username, String password,int purchase_count, String bought_items) {
+        WestminsterShoppingManager shoppingManager = new WestminsterShoppingManager();
         // Create a new user and add it to the user list
         User newUser = new User(name,username, password,purchase_count,bought_items);
         userList.add(newUser);
-
+        shoppingManager.saveUsersToFile(userList);
         JOptionPane.showMessageDialog(RegisterGUI.this, "Registration Successful. Welcome, " + username);
     }
 

@@ -12,6 +12,8 @@
         private List<Product> productList; // Assuming productList is populated somewhere
         private List<Product> shoppingCartList; // Assuming shoppingCart is populated somewhere
         private List<User> userList;
+        private boolean login_checker=false;
+        private static User current_user;
 
 
         private JComboBox<String> productTypeComboBox;
@@ -74,7 +76,8 @@
             setTitle("Shopping GUI");
             setSize(800, 600);
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+            setLocationRelativeTo(null);
+            setMinimumSize(new Dimension(700, 500));
             // Product type dropdown
             String[] productTypes = {"All", "Electronics", "Clothes"};
             productTypeComboBox = new JComboBox<>(productTypes);
@@ -100,22 +103,27 @@
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     // Get the selected row index
-                    int selectedRow = productTable.getSelectedRow();
+                    if(login_checker){
+                        int selectedRow = productTable.getSelectedRow();
 
-                    // If a row is selected
-                    if (selectedRow >= 0) {
-                        // Get the selected product
-                        Product selectedProduct = productList.get(selectedRow);
-                        // Add the selected product to the shopping cart
-                        shoppingCartList.add(selectedProduct);
-                        // Display a message or update the GUI to indicate success
-                        JOptionPane.showMessageDialog(ShoppingGUI.this, "Product added to the shopping cart");
+                        // If a row is selected
+                        if (selectedRow >= 0) {
+                            // Get the selected product
+                            Product selectedProduct = productList.get(selectedRow);
+                            // Add the selected product to the shopping cart
+                            shoppingCartList.add(selectedProduct);
+                            // Display a message or update the GUI to indicate success
+                            JOptionPane.showMessageDialog(ShoppingGUI.this, "Product added to the shopping cart");
 
-                        // Optionally update the shopping cart details in the GUI
-                        // shoppingCartDetailsTextArea.setText(shoppingCart.getDetails());
-                    } else {
-                        // If no row is selected, display an error message
-                        JOptionPane.showMessageDialog(ShoppingGUI.this, "Please select a product to add to the shopping cart", "Error", JOptionPane.ERROR_MESSAGE);
+                            // Optionally update the shopping cart details in the GUI
+                            // shoppingCartDetailsTextArea.setText(shoppingCart.getDetails());
+                        } else {
+                            // If no row is selected, display an error message
+                            JOptionPane.showMessageDialog(ShoppingGUI.this, "Please select a product to add to the shopping cart", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                    else{
+                     showLoginRegisterOptionBox();
                     }
                 }
             });
@@ -129,7 +137,19 @@
                 }
             });
             loginButton = new JButton("Login");
+            loginButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    openLoginGUI();
+                }
+            });
             registerButton = new JButton("Register");
+            registerButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    openRegisterGUI();
+                }
+            });
 
             // Layout setup
             JPanel controlPanel = new JPanel();
@@ -165,17 +185,32 @@
             model.addColumn("Price");
             model.addColumn("Info");
 
-            for (Product product : productList) {
+            List<Integer> rowsToColor = new ArrayList<>(); // Keep track of rows to color
+
+            for (int i = 0; i < productList.size(); i++) {
+                Product product = productList.get(i);
                 if (productType.equals("All") || (productType.equals("Electronics") && product instanceof Electronics)
                         || (productType.equals("Clothes") && product instanceof Clothing)) {
                     Object[] rowData = {product.getProductId(), product.getProductName(),
-                            product.getAvailableItems(), product.getPrice(),getInfoText(product)};
+                            product.getAvailableItems(), product.getPrice(), getInfoText(product)};
                     model.addRow(rowData);
+
+                    // Check if available items are less than 4 and mark the row for color change
+                    if (product.getAvailableItems() < 4) {
+                        rowsToColor.add(i);
+                    }
                 }
             }
 
+            // Set the model to the table
             productTable.setModel(model);
+
+            // Change the color of specified rows
+            for (int row : rowsToColor) {
+                model.setValueAt("<html><font color='red'>" + model.getValueAt(row, 2) + "</font></html>", row, 2);
+            }
         }
+
         private String getInfoText(Product product) {
             if (product instanceof Electronics) {
                 Electronics electronic = (Electronics) product;
@@ -215,14 +250,16 @@
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    new LoginGUI(userList).setVisible(true);
+                    new LoginGUI(ShoppingGUI.this, userList).setVisible(true);
                 }
             });
         }
         public void updateLoginButton(User user) {
-            loginButton.setText(user.getUsername());
+            loginButton.setText(user.getName());
             loginButton.setEnabled(false); // Disable the button after login
             registerButton.setVisible(false); // Hide the register button
+            current_user=user;
+            login_checker=true;
         }
 
 
@@ -239,12 +276,12 @@
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    new ShoppingCartGUI(shoppingCartList).setVisible(true);
+                    new ShoppingCartGUI(shoppingCartList, current_user).setVisible(true);
                 }
             });
         }
 
-        public static void main(String[] args) {
+            public static void main(String[] args) {
             WestminsterShoppingManager manager = new WestminsterShoppingManager();
             manager.loadProductsFromFile(); // or add products
 
