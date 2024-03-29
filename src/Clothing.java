@@ -35,11 +35,11 @@ public class Clothing extends Product implements Serializable{
     }
     @Override
     public String toString() {
-        return "Clothing{" +
-                "productId='" + getProductId() + '\'' +
-                ", productName='" + getProductName() + '\'' +
-                ", size='" + size + '\'' +
-                ", color='" + color + '\'' +
-                '}';
+            return "Product Name: " + getProductName() +"\n"+
+                    "Product ID: " + getProductId() +"\n"+
+                    "Price: " + getPrice() +"\n"+
+                    "Color: " + getColor() +"\n"+
+                    "Size: " + getSize();
+
     }
 }

@@ -1,6 +1,8 @@
     import javax.swing.*;
     import javax.swing.table.DefaultTableModel;
     import java.awt.*;
+    import java.awt.event.ActionEvent;
+    import java.awt.event.ActionListener;
     import java.util.HashMap;
     import java.util.List;
     import java.util.Map;
@@ -9,14 +11,18 @@
 
         private List<Product> shoppingCart;
         private JTable cartTable;
-        private JTextArea discountArea;
         private JLabel finalTotalLabel;
         private JButton buyButton;
         private static User current_user;
+        private JLabel label1;
+        private JLabel label2;
+        private JLabel label3 ;
+        private WestminsterShoppingManager manager;
 
-        public ShoppingCartGUI(List<Product> shoppingCart, User current_user) {
+        public ShoppingCartGUI(List<Product> shoppingCart, User current_user, WestminsterShoppingManager manager) {
             this.shoppingCart = shoppingCart;
             ShoppingCartGUI.current_user = current_user;
+            this.manager = manager;
             initializeGUI();
         }
 
@@ -27,17 +33,35 @@
             setLocationRelativeTo(null);
             setMinimumSize(new Dimension(700, 500));
 
-            // Shopping cart table
+            // Shopping cart table  
             cartTable = new JTable();
             JScrollPane tableScrollPane = new JScrollPane(cartTable);
-            JLabel label1 = new JLabel("Total : 0 $");
+            label1 = new JLabel("Total : 0 $");
             label1.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
-            JLabel label2 = new JLabel("First Purchase Discount (10%)                                        Checking");
+            label2 = new JLabel("First Purchase Discount (10%)                                        Checking");
             label2.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
-            JLabel label3 = new JLabel("Three Times in same Category Discount (20%)            Not Added Yet");
+            label3 = new JLabel("Three Times in same Category Discount (20%)            Not Added Yet");
             label3.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
             buyButton = new JButton("Purchase");
             buyButton.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+            buyButton = new JButton("Purchase");
+            buyButton.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+            buyButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // Reduce quantity from the main product list
+                    reduceQuantityInMainProductList();
+
+                    // Increase user's purchase count
+                    increaseUserPurchaseCount();
+
+                    // Display a message or update the GUI to indicate success
+                    JOptionPane.showMessageDialog(ShoppingCartGUI.this, "Purchase successful!");
+
+                    // Optionally update the shopping cart details in the GUI
+                    populateCartDetails();
+                }
+            });
 
             // Final total label
             finalTotalLabel = new JLabel("Final Total: $0.00");
@@ -63,6 +87,23 @@
 
             // Populate cart details
             populateCartDetails();
+        }
+        private void reduceQuantityInMainProductList() {
+            for (Product product : shoppingCart) {
+                for (Product mainProduct : manager.getProductList()) {
+                    if (product.getProductId().equals(mainProduct.getProductId())) {
+                        mainProduct.setAvailableItems(mainProduct.getAvailableItems() - 1);
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void increaseUserPurchaseCount() {
+            if (current_user != null) {
+                current_user.setPurchased_count(current_user.getPurchased_count() + 1);
+                manager.saveUsersToFile(manager.getUserList());
+            }
         }
 
         private void populateCartDetails() {
@@ -99,23 +140,20 @@
                     Object[] rowData = {productID, getProductDetails(product), 1, price};  // Fixed quantity of 1
                     model.addRow(rowData);
                 }
-
+                products_price+=price;
 
             }
-            for(int i=0; i<model.getRowCount();i++){
-                System.out.println((double) model.getValueAt(i, 3));
-                products_price+= (double) model.getValueAt(i, 3);
-            }
+
 
 
             // Apply discount if applicable
             double discount=applyDiscount(products_price);
             double tempTotalPrice=products_price-discount;
             double totalPrice= tempTotalPrice-applyFirstPurDiscount(tempTotalPrice);
-
+            label1.setText("Total : +"+products_price+ " $");
             cartTable.setModel(model);
 
-            finalTotalLabel.setText("      Final Total: $" + totalPrice);
+            finalTotalLabel.setText("Final Total: " + totalPrice+ " $");
         }
 
         private String getProductDetails(Product product) {
@@ -162,30 +200,34 @@
             DefaultTableModel model = (DefaultTableModel) cartTable.getModel();
 
                 double discount = products_price * discountPercentage;
-                // Accumulate the total discount
-            // Update the discount area
-            discountArea.setText("\n\tDiscount applied (" + (discountPercentage * 100) + "%): -$" + discount+"\n");
+                // Accumulate the discount
+            // Update the discount
+            label3.setText("Three Times in same Category Discount (20%)            "+discount+" $");
             return discount;
         }
-        private double applyFirstPurDiscount(Double productsPrice){
-            int purchased_item;
-            try{
-                purchased_item = current_user.getPurchased_count();
-                double discount=0;
-                if(purchased_item==0){
-                    discount= productsPrice*0.1;
+        private double applyFirstPurDiscount(Double productsPrice) {
+            try {
+                if (current_user != null) {
+                    int purchased_item = current_user.getPurchased_count();
+                    double discount = 0;
+                    if (purchased_item == 0) {
+                        discount = productsPrice * 0.1;
+                    }
+                    label2.setText("First Purchase Discount (10%)                                        " + discount + " $");
+                    return discount;
+                } else {
+                    label2.setText("First Purchase Discount (10%)                                        User not logged in");
+                    return 0;
                 }
-                return discount;
-            }catch (NullPointerException e){
-                System.out.println("There is no User Logged In");
+            } catch (NullPointerException e) {
+                System.out.println("Error: " + e.getMessage());
+                return 0;
             }
-            return 0;
         }
+
+
         public static void main(String[] args) {
-
             // Example usage:
-            // Assuming you have a shopping cart (List<Product> shoppingCart) in your WestminsterShoppingManager
-
             WestminsterShoppingManager manager = new WestminsterShoppingManager();
             manager.loadProductsFromFile();  // Load products from file
             manager.openGUI();  // Open the main shopping GUI
@@ -195,7 +237,7 @@
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    new ShoppingCartGUI(shoppingCart,current_user).setVisible(true);
+                    new ShoppingCartGUI(shoppingCart,current_user,manager).setVisible(true);
                 }
             });
         }

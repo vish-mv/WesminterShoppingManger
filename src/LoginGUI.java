@@ -16,12 +16,12 @@ class LoginGUI extends JFrame {
         this.shoppingGUI = shoppingGUI;
         this.users = users;
 
-
+        setResizable(false);
         setTitle("Login");
-        setSize(500, 200);
+        setSize(600, 250);;
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
-        setMinimumSize(new Dimension(700, 500));
+
 
         // Main panel with BorderLayout
         JPanel mainPanel = new JPanel(new BorderLayout());
@@ -35,7 +35,9 @@ class LoginGUI extends JFrame {
         login.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
 
         JLabel usernameLabel = new JLabel("Username:");
+        usernameLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 5));
         JLabel passwordLabel = new JLabel("Password:");
+        passwordLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 5));
 
         usernameField = new JTextField();
         passwordField = new JPasswordField();

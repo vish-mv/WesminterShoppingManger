@@ -1,4 +1,9 @@
 import java.io.Serializable;
+/*
+  Represents electronic products and extends the `Product` class.
+  Includes attributes such as the brand and warranty period.
+  Implements the `Serializable` interface for object serialization support.
+ */
 public class Electronics extends Product implements Serializable {
     private String brand;
     private int warrantyPeriod;
@@ -35,11 +40,10 @@ public class Electronics extends Product implements Serializable {
     }
     @Override
     public String toString() {
-        return "Electronics{" +
-                "productId='" + getProductId() + '\'' +
-                ", productName='" + getProductName() + '\'' +
-                ", brand='" + brand + '\'' +
-                ", warrantyPeriod=" + warrantyPeriod +
-                '}';
+        return "Product Name: " + getProductName() +"\n"+
+                "Product ID: " + getProductId() +"\n"+
+                "Price: " + getPrice() +"$"+"\n"+
+                "Brand: " + getBrand() +"\n"+
+                "Warranty: " + getWarrantyPeriod()+ " Weeks";
     }
 }

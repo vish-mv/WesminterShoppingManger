@@ -41,4 +41,7 @@ public class User implements Serializable {
     public int getPurchased_count(){
         return purchased_count;
     }
+    public void setPurchased_count(int purchased_count){
+        this.purchased_count=purchased_count;
+    }
 }
